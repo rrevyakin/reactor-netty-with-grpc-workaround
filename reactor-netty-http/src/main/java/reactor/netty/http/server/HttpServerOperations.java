@@ -97,7 +97,7 @@ import static reactor.netty.http.server.HttpServerState.REQUEST_DECODING_FAILED;
  *
  * @author Stephane Maldini1
  */
-class HttpServerOperations extends HttpOperations<HttpServerRequest, HttpServerResponse>
+public class HttpServerOperations extends HttpOperations<HttpServerRequest, HttpServerResponse>
 		implements HttpServerRequest, HttpServerResponse {
 
 	final BiPredicate<HttpServerRequest, HttpServerResponse> compressionPredicate;
@@ -108,7 +108,7 @@ class HttpServerOperations extends HttpOperations<HttpServerRequest, HttpServerR
 	final HttpServerFormDecoderProvider formDecoderProvider;
 	final BiFunction<? super Mono<Void>, ? super Connection, ? extends Mono<Void>> mapHandle;
 	final HttpRequest nettyRequest;
-	final HttpResponse nettyResponse;
+	HttpResponse nettyResponse;
 	final HttpHeaders responseHeaders;
 	final String scheme;
 
@@ -804,6 +804,10 @@ class HttpServerOperations extends HttpOperations<HttpServerRequest, HttpServerR
 	@Override
 	protected HttpMessage outboundHttpMessage() {
 		return nettyResponse;
+	}
+
+	public void setNettyResponse(HttpResponse nettyResponse) {
+		this.nettyResponse = nettyResponse;
 	}
 
 	final Flux<HttpData> receiveFormInternal(HttpServerFormDecoderProvider config) {

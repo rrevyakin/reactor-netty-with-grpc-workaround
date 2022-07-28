@@ -29,6 +29,8 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufHolder;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.LastHttpContent;
 import io.netty.util.IllegalReferenceCountException;
 import org.reactivestreams.Publisher;
 import reactor.core.CoreSubscriber;
@@ -353,6 +355,14 @@ public class ByteBufFlux extends FluxOperator<ByteBuf, ByteBuf> {
 	final static Function<Object, ByteBuf> bytebufExtractor = o -> {
 		if (o instanceof ByteBuf) {
 			return (ByteBuf) o;
+		}
+		if(o instanceof LastHttpContent) {
+			LastHttpContent o1 = (LastHttpContent) o;
+			return new HttpContentByteBuf(o1.content(), true);
+		}
+		if(o instanceof HttpContent) {
+			HttpContent o1 = (HttpContent) o;
+			return new HttpContentByteBuf(o1.content(), false);
 		}
 		if (o instanceof ByteBufHolder) {
 			return ((ByteBufHolder) o).content();

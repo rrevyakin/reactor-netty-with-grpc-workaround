@@ -21,7 +21,9 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.http.DefaultHttpContent;
+import io.netty.handler.codec.http.DefaultLastHttpContent;
 import io.netty.handler.codec.http2.Http2StreamFrameToHttpObjectCodec;
+import reactor.netty.*;
 
 /**
  * This handler is intended to work together with {@link Http2StreamFrameToHttpObjectCodec}
@@ -42,7 +44,15 @@ final class Http2StreamBridgeClientHandler extends ChannelDuplexHandler {
 	@Override
 	@SuppressWarnings("FutureReturnValueIgnored")
 	public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) {
-		if (msg instanceof ByteBuf) {
+		if(msg instanceof HttpContentByteBuf) {
+			HttpContentByteBuf byteBuf = (HttpContentByteBuf) msg;
+			if (byteBuf.isEndOfStream()) {
+				ctx.write(new DefaultLastHttpContent(byteBuf), promise);
+			} else {
+				ctx.write(new DefaultHttpContent(byteBuf), promise);
+			}
+		}
+		else if (msg instanceof ByteBuf) {
 			//"FutureReturnValueIgnored" this is deliberate
 			ctx.write(new DefaultHttpContent((ByteBuf) msg), promise);
 		}

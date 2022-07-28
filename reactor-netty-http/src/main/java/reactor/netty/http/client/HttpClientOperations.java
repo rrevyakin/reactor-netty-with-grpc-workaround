@@ -400,7 +400,17 @@ class HttpClientOperations extends HttpOperations<NettyInbound, NettyOutbound>
 		if (responseState != null) {
 			return responseState.headers;
 		}
-		throw new IllegalStateException("Response headers cannot be accessed without " + "server response");
+		throw new IllegalStateException("Response headers cannot be accessed without server response");
+	}
+
+	@Override
+	public HttpResponse nettyResponse() {
+		ResponseState responseState = this.responseState;
+		if (responseState != null) {
+			return responseState.response;
+		}
+
+		throw new IllegalStateException("Response cannot be accessed without server response");
 	}
 
 	@Override

@@ -16,6 +16,7 @@
 package reactor.netty.http.client;
 
 import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import reactor.core.publisher.Mono;
 
@@ -30,6 +31,13 @@ import reactor.core.publisher.Mono;
  * @since 0.5
  */
 public interface HttpClientResponse extends HttpClientInfos {
+
+	/**
+	 * @return original netty response
+	 */
+	default HttpResponse nettyResponse() {
+		throw new IllegalStateException("Response cannot be accessed without server response");
+	}
 
 	/**
 	 * Return response HTTP headers.
